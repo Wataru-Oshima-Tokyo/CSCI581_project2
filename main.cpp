@@ -6,13 +6,15 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include "robot.h"
+#include "matrix.h"
 using namespace std;
 #define rep(i,a,b) for(int i=a; i<b;i++)
 
 
 int main(int argc, char **argv){
     string observation_txt, input_txt;
-    double epsilon =0;
+    long double epsilon =0;
     if(argc==4){
         observation_txt = argv[3];
         input_txt = argv[1];
@@ -62,144 +64,125 @@ int main(int argc, char **argv){
     // std::vector<int>::iterator jt;
     for(int i=0; i<input_vector.size();i++){
         for(int j=0; j<input_vector[i].size();j++){
-            cout << input_vector[i][j] << " ";
+            // cout << input_vector[i][j] << " ";
         }
-        printf("\n");
+        // printf("\n");
     }
     input_file.close();
 
     int mat_size = input_vector[0][0];
-    cout << "mat size is " << mat_size << endl;
-    double matrix[mat_size][mat_size];
-    double t_matrix[mat_size][mat_size];
+    // cout << "mat size is " << mat_size << endl;
+    long double** _matrix = new long double*[mat_size];
+    long double** t_matrix = new long double*[mat_size];
     // matrix[0][0] =1;
+    robot rb;
+    matrix mt;
+    rep(i,0,mat_size){
+        _matrix[i] = new long double[mat_size];
+        t_matrix[i] = new long double[mat_size];
+    } 
     
-    for(int i=0; i<mat_size; i++){
-        for(int j =0; j<mat_size;j++){
-            matrix[i][j] =0;
-        }
-    }
+    mt.initMatrix(_matrix, mat_size);
+    mt.assignValue(_matrix, mat_size, input_vector);
+    mt.getTranpose(_matrix, t_matrix, mat_size);
+    // mt.showMatrix(_matrix, mat_size);
+    // for(int i=0; i<mat_size; i++){
+    //     for(int j =0; j<mat_size;j++){
+    //         _matrix[i][j] =0;
+    //     }
+    // }
     
-    for(int i=0; i<mat_size; i++){
-        for(int j=0; j<input_vector[i+1][2];j++){
-            int location = input_vector[i+1][j+3];
-            long double value = (double)1/(double)(input_vector[i+1][2]);
-            cout << input_vector[i+1][j+3] << " ";
-            matrix[i][location] = value;
-            t_matrix[location][i] = matrix[i][location];
-        }
-        cout <<endl;
-    }
+    // for(int i=0; i<mat_size; i++){
+    //     for(int j=0; j<input_vector[i+1][2];j++){
+    //         int location = input_vector[i+1][j+3];
+    //         long double value = (long double)1/(long double)(input_vector[i+1][2]);
+    //         // cout << input_vector[i+1][j+3] << " ";
+    //         matrix[i][location] = value;
+    //         t_matrix[location][i] = matrix[i][location];
+    //     }
+    //     // cout <<endl;
+    // }
 
-    cout <<  "show the matrix after assigning numnber"<<endl;
-    for(int i=0; i<mat_size; i++){
-        for(int j =0; j<mat_size;j++){
-            cout << matrix[i][j] << " ";
-            t_matrix[j][i] = matrix[i][j];
-        }
-        cout <<endl;
-    }
-    cout <<  "show the transpose matrix after assigning numnber"<<endl;
-    for (int i = 0; i < mat_size; ++i){
-        for (int j = 0; j < mat_size; ++j) {
-            cout << t_matrix[i][j] << " ";
-        }
-        cout << endl;
-    }
+    // cout <<  "show the matrix after assigning numnber"<<endl;
+
+    // for(int i=0; i<mat_size; i++){
+    //     for(int j =0; j<mat_size;j++){
+    //         // cout << matrix[i][j] << " ";
+    //         t_matrix[j][i] = matrix[i][j];
+    //     }
+    //     // cout <<endl;
+    // }
+    // cout <<  "show the transpose matrix after assigning numnber"<<endl;
+    // for (int i = 0; i < mat_size; ++i){
+    //     for (int j = 0; j < mat_size; ++j) {
+    //         // cout << t_matrix[i][j] << " ";
+    //     }
+    //     // cout << endl;
+    // }
     int time_iteration = observation_vector.size();
     // Observation prob at time 0;
     long double observation_prob[time_iteration][mat_size];
     long double value[time_iteration][mat_size];
+    long double JE[mat_size];
     rep(q,0, time_iteration){
-        long double obs_t0[mat_size];
-        long double value_t0 = (double)1/(double)(mat_size);
-        for(int i=0;i<mat_size;i++){
-            obs_t0[i] = value_t0;
+        bitset<6> diff[mat_size];
+        bitset<6> sensor_info[mat_size];
+        bitset<6> obs_info[mat_size];
+        long double E[mat_size];
+        long double sum = 0;
+        long double MAX = -INT_MAX;
+        vector<int> idx;
+        if(q==0){
+            rep(i,0,mat_size) value[q][i] = rb.getInitValue(mat_size);
+        }else{
+            rep(i,0,mat_size){
+                value[q][i] = JE[i];
+            }
         }
         for(int i=0;i<mat_size;i++){
-            cout << obs_t0[i] <<endl;
+            observation_prob[q][i] = value[q][i];
         }
         //getting the JP at time 0
-        long double jp_t0[mat_size];
+        long double _jp[mat_size];
         for(int i=0;i<mat_size;i++){
             long double temp=0;
             for(int j=0; j<mat_size;j++){
-                temp += (double)t_matrix[i][j] * (double)obs_t0[j];
+                temp += rb.calculateJP(t_matrix[i][j], observation_prob[q][j]);
             }
-            jp_t0[i] = temp;
-        }
-        cout << "show the joint probability at time 0"<< endl;
-        //the sum of jp at time 0
-        // Iteration 1;
-        bitset<6> sensor_info[mat_size];
-        bitset<6> obs_info[mat_size];
-        rep(i,0,mat_size){
-            sensor_info[i] = input_vector[i+1][1];
-            cout << sensor_info[i] << endl;
-            obs_info[i]=0;
-        }
-        rep(i,0, observation_vector[0][0]){
-            bitset<6> tempbit=0;
-            int digit = observation_vector[0][i+1];
-            // cout << digit <<endl;
-            switch (digit)
-            {
-            case 1:
-                tempbit = 32 & 0xFF;
-                break;
-            case 2:
-                tempbit = 16 & 0xFF;
-                break;
-            case 3:
-                tempbit = 8 & 0xFF;
-                break;
-            case 4:
-                tempbit = 4 & 0xFF;
-                break;
-            case 5:
-                tempbit = 2 & 0xFF;
-                break;
-            case 6:
-                tempbit = 1 & 0xFF;
-                break;
-            default:
-                break;
-            }
-            obs_info[0] |=tempbit;
-        
-        }
-        //  cout << obs_info[0] <<endl;
-        //calculating the difference here at time 0 and E
-        bitset<6> diff[mat_size];
-        long double JE[mat_size];
-        double sum = 0;
-        rep(i,0,mat_size){
-            diff[i] = sensor_info[i] ^ obs_info[0];
-            // cout << " diff[i] "<< diff[i] <<endl;
-            int diff_d = diff[i].count();
-            // cout << diff_d <<endl;
-            JE[i] = (double)pow((double)epsilon, diff_d)*(double)pow((double)(1-epsilon), (6-diff_d)) * jp_t0[i];
-            cout << JE[i] <<endl;
-            sum+=JE[i];
+            _jp[i] = temp;
         }
 
-        //Estimation probability at time 0 
-        long double E[mat_size];
-        cout << sum <<endl;
+        //convert decimal to binary 
         rep(i,0,mat_size){
-            E[i] = (long double)JE[i]/(long double)sum;
-            cout << E[i] <<endl;
+            sensor_info[i] = input_vector[i+1][1];
+            obs_info[i]=0;
         }
-        long double MAX =0;
-        int idx = 0;
+        //calucate observation from observation.txt
+        rep(i,0, observation_vector[q][0]){
+            obs_info[q] |= rb.getObs(observation_vector[q][i+1]);
+        }
+        //calculate Joint Estimation
         rep(i,0,mat_size){
-            long double temp = E[i];
-            if(temp>MAX){
-                MAX = temp;
-                idx =i;
-            } 
+            JE[i] = rb.calculateJE(sensor_info[i],obs_info[q], epsilon, _jp[i]);
+            sum+=JE[i];
         }
-        cout << showpoint << fixed << setprecision(16) << MAX << " " << idx <<endl;
+        
+        //get Estimation
+        rep(i,0,mat_size){
+            E[i] = rb.getE(JE[i],sum);
+        }
+        //get estimation probability
+        rep(i,0,mat_size){
+            rb.getEP(E[i], MAX, idx,i);
+        }
+
+        //show the highest probability and state
+        cout << showpoint << fixed << setprecision(16) << MAX << " ";
+        rep(i,0,idx.size()) cout << idx[i] << " ";
+
+        //initialize the vector idx
+        idx.clear();
+        cout << endl;
     }
     
 
