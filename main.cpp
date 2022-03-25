@@ -6,14 +6,16 @@
 #include <string>
 #include <sstream>
 using namespace std;
+#define rep(i,a,b) for(int i=a; i<b;i++)
+
 
 int main(int argc, char **argv){
     string observation_txt, input_txt;
-    double probability =0;
+    double epsilon =0;
     if(argc==4){
-        observation_txt = argv[1];
-        input_txt = argv[3];
-        probability = atof(argv[2]);
+        observation_txt = argv[3];
+        input_txt = argv[1];
+        epsilon = atof(argv[2]);
     }else{
         cout << "hell no! put 2 files and 1 probability" <<endl;
         exit(-1);
@@ -114,7 +116,7 @@ int main(int argc, char **argv){
         cout << obs_t0[i] <<endl;
     }
     //getting the JP at time 0
-    double jp_t0[mat_size];
+    long double jp_t0[mat_size];
     for(int i=0;i<mat_size;i++){
         double temp=0;
         for(int j=0; j<mat_size;j++){
@@ -124,13 +126,79 @@ int main(int argc, char **argv){
     }
     cout << "show the joint probability at time 0"<< endl;
     //the sum of jp at time 0
-    double sum_t0=0;
+    long double sum_t0=0;
     for(int i=0;i<mat_size;i++){
-        cout << jp_t0[i] <<endl;
+        // cout << jp_t0[i] <<endl;
         sum_t0 +=jp_t0[i];
     }
-    cout << "The sum of estimation" <<endl;
-    cout <<sum_t0 <<endl;
+    // Iteration 1;
+    bitset<6> sensor_info[mat_size];
+    bitset<6> obs_info[mat_size];
+    rep(i,0,mat_size){
+         sensor_info[i] = input_vector[i+1][1];
+        //  cout << sensor_info[i] << endl;
+         obs_info[i]=0;
+    }
+    rep(i,0, observation_vector[0][0]){
+        bitset<6> tempbit=0;
+        int digit = observation_vector[0][i+1];
+        // cout << digit <<endl;
+        switch (digit)
+        {
+        case 1:
+            tempbit = 1 & 0xFF;
+            break;
+        case 2:
+            tempbit = 2 & 0xFF;
+            break;
+        case 3:
+            tempbit = 4 & 0xFF;
+            break;
+        case 4:
+            tempbit = 8 & 0xFF;
+            break;
+        case 5:
+            tempbit = 16 & 0xFF;
+            break;
+        case 6:
+            tempbit = 32 & 0xFF;
+            break;
+        default:
+            break;
+        }
+        obs_info[0] |=tempbit;
+        // cout << obs_info[0] <<endl;
+    }
+
+    //calculating the difference here at time 0 and E
+    bitset<6> diff[mat_size];
+    long double JE[mat_size];
+    double sum = 0;
+    rep(i,0,mat_size){
+        diff[i] = sensor_info[i] ^ obs_info[0];
+        int diff_d = diff[i].count();
+        JE[i] = (double)pow((double)epsilon, diff_d)*(double)pow((double)(1-epsilon), (6-diff_d));
+        cout << JE[i] <<endl;
+        sum+=JE[i];
+    }
+
+    //Estimation probability at time 0 
+    long double E[mat_size];
+    cout << sum <<endl;
+    rep(i,0,mat_size){
+        E[i] = (double)JE[i]/(double)sum;
+        cout << E[i] <<endl;
+    }
+
+
+    // for(int i=0;i<mat_size;i++){
+       
+    // }
+
+    // cout << "Joint estimation at time 1" <<endl;
+    
+    // cout << "The sum of estimation" <<endl;
+    // cout <<sum_t0 <<endl;
 
     // cout << "The joint prediction probability at time 0" <<endl;
     // for(int i=0;i<mat_size;i++){
