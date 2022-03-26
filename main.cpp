@@ -62,12 +62,6 @@ int main(int argc, char **argv){
     }
     // std::vector<vector<int> >::iterator it;
     // std::vector<int>::iterator jt;
-    for(int i=0; i<input_vector.size();i++){
-        for(int j=0; j<input_vector[i].size();j++){
-            // cout << input_vector[i][j] << " ";
-        }
-        // printf("\n");
-    }
     input_file.close();
 
     int mat_size = input_vector[0][0];
