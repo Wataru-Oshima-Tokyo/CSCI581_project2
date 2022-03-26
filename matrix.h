@@ -9,11 +9,11 @@ class matrix{
     public:
         matrix();
         ~matrix();
-        void initMatrix(long double **mat, int size);
-        void assignValue(long double **mat, int size, vector<vector<int> > _input);
-        void getTranpose(long double **mat, long double **t_matrix, int size);
-        void showMatrix(long double **mat, int size);
-        void setMatrix(long double *mat, int size);
+        void initMatrix(vector<vector<long double > > &mat, int size);
+        void assignValue(vector<vector<long double > > &mat, int size, vector<vector<int> > _input);
+        void getTranpose(vector<vector<long double > > &mat, vector<vector<long double > > &t_mat, int size);
+        void showMatrix(vector<vector<long double > > &mat, int size);
+        void setMatrix(vector<vector<long double > > &mat, int size);
 
 };
 

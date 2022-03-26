@@ -9,11 +9,11 @@ matrix::~matrix(){
 
 }
 
-void matrix::setMatrix(long double *mat, int size){
-    mat = new long double[size];
-};
+void matrix::setMatrix(vector<vector<long double > > &mat, int size){
+    mat.resize(size);
+}
 
-void matrix::initMatrix(long double **mat, int size){
+void matrix::initMatrix(vector<vector<long double > > &mat, int size){
     for(int i=0; i<size; i++){
         for(int j =0; j<size; j++){
             mat[i][j] =0;
@@ -21,7 +21,7 @@ void matrix::initMatrix(long double **mat, int size){
     }
 }
 
-void matrix::assignValue(long double **mat, int size, vector<vector<int> > _input){
+void matrix::assignValue(vector<vector<long double > > &mat, int size, vector<vector<int> > _input){
     
     for(int i=0; i<size; i++){
         for(int j=0; j<_input[i+1][2];j++){
@@ -34,7 +34,7 @@ void matrix::assignValue(long double **mat, int size, vector<vector<int> > _inpu
         }
 }
 
-void matrix::getTranpose(long double **mat, long double **t_matrix, int size){
+void matrix::getTranpose(vector<vector<long double > > &mat, vector<vector<long double > > &t_matrix, int size){
     for(int i=0; i<size; i++){
         for(int j =0; j<size;j++){
             t_matrix[j][i] = mat[i][j];
@@ -42,7 +42,7 @@ void matrix::getTranpose(long double **mat, long double **t_matrix, int size){
     }
 }
 
-void matrix::showMatrix(long double **mat, int size){
+void matrix::showMatrix(vector<vector<long double > > &mat, int size){
     for (int i = 0; i < size; ++i){
         for (int j = 0; j < size; ++j) {
             cout << mat[i][j] << " ";
