@@ -72,17 +72,23 @@ int main(int argc, char **argv){
 
     int mat_size = input_vector[0][0];
     // cout << "mat size is " << mat_size << endl;
-    long double** _matrix = new long double*[mat_size];
-    long double** t_matrix = new long double*[mat_size];
+    // long double** _matrix = new long double*[mat_size];
+    // long double** t_matrix = new long double*[mat_size];
+    vector<vector<long double > > _matrix;
+    vector<vector<long double > > t_matrix;
+    _matrix.resize(mat_size, vector<long double>(mat_size));
+    t_matrix.resize(mat_size, vector<long double>(mat_size));
+    // long double** t_matrix = (long double **)alloca(sizeof(int) * mat_size);
     // matrix[0][0] =1;
     robot rb;
     matrix mt;
-    rep(i,0,mat_size){
-        _matrix[i] = new long double[mat_size];
-        t_matrix[i] = new long double[mat_size];
-    } 
+    // rep(i,0,mat_size){
+        
+    //     _matrix[i] = new long double[mat_size];
+    //     t_matrix[i] = new long double[mat_size];
+    // } 
     
-    mt.initMatrix(_matrix, mat_size);
+    // mt.initMatrix(_matrix, mat_size);
     mt.assignValue(_matrix, mat_size, input_vector);
     mt.getTranpose(_matrix, t_matrix, mat_size);
     // mt.showMatrix(_matrix, mat_size);
@@ -121,16 +127,24 @@ int main(int argc, char **argv){
     // }
     int time_iteration = observation_vector.size();
     // Observation prob at time 0;
-    long double observation_prob[time_iteration][mat_size];
-    long double value[time_iteration][mat_size];
-    long double JE[mat_size];
+    vector<vector<long double> > observation_prob;
+    observation_prob.resize(time_iteration, vector<long double>(mat_size));
+    // long double observation_prob[time_iteration][mat_size];
+    // long double value[time_iteration][mat_size];
+    vector<vector<long double> > value;
+    value.resize(time_iteration, vector<long double>(mat_size));
+    // long double JE[mat_size];
+    vector<long double> JE;
+    JE.resize(mat_size);
     rep(q,0, time_iteration){
-        bitset<6> diff[mat_size];
-        bitset<6> sensor_info[mat_size];
-        bitset<6> obs_info[mat_size];
-        long double E[mat_size];
+        // bitset<6> *diff = new bitset<6>[mat_size];
+        bitset<6> *sensor_info= new bitset<6>[mat_size];
+        bitset<6> *obs_info= new bitset<6>[mat_size];
+        vector<long double> E;
+        E.resize(mat_size);
+        // long double E[mat_size];
         long double sum = 0;
-        long double MAX = -INT_MAX;
+        long double MAX = -1;
         vector<int> idx;
         if(q==0){
             rep(i,0,mat_size) value[q][i] = rb.getInitValue(mat_size);
@@ -143,7 +157,9 @@ int main(int argc, char **argv){
             observation_prob[q][i] = value[q][i];
         }
         //getting the JP at time 0
-        long double _jp[mat_size];
+        // long double _jp[mat_size];
+        vector<long double > _jp;
+        _jp.resize(mat_size);
         for(int i=0;i<mat_size;i++){
             long double temp=0;
             for(int j=0; j<mat_size;j++){
@@ -183,6 +199,8 @@ int main(int argc, char **argv){
         //initialize the vector idx
         idx.clear();
         cout << endl;
+        delete[] sensor_info;
+        delete[] obs_info;
     }
     
 
