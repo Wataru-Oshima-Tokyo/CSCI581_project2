@@ -1,0 +1,8 @@
+version: "Apple Swift version 5.5.1 (swiftlang-1300.0.31.4 clang-1300.0.29.6)"
+options: "3beccf40bc91ed8a28c1bed30bf0158750f450f783a70764f4ec7f4030216a04"
+build_start_time: [1656227141, 439280033]
+build_end_time: [1656227142, 588402032]
+inputs:
+  "/Users/wataruoshima/CINS467/apps/persistence_wataru/macos/Flutter/GeneratedPluginRegistrant.swift": [1656227123, 697743892]
+  "/Users/wataruoshima/CINS467/apps/persistence_wataru/macos/Runner/AppDelegate.swift": [1644454869, 0]
+  "/Users/wataruoshima/CINS467/apps/persistence_wataru/macos/Runner/MainFlutterWindow.swift": [1644454869, 0]

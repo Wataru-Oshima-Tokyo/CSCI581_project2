@@ -1,0 +1,6 @@
+io/flutter/plugins/GeneratedPluginRegistrant.java
+ io.flutter.plugins.GeneratedPluginRegistrant
+com/example/persistence_wataru/BuildConfig.java
+ com.example.persistence_wataru.BuildConfig
+com/example/persistence_wataru/MainActivity.java
+ com.example.persistence_wataru.MainActivity

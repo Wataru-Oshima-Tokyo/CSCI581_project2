@@ -1,0 +1,4 @@
+#Sun Jun 26 16:21:50 JST 2022
+base.0=/Users/wataruoshima/CINS467/apps/persistence_wataru/build/app/intermediates/dex/debug/mergeDexDebug/classes.dex
+renamed.0=classes.dex
+path.0=classes.dex
